@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chisme Mag - ¡El Tea de las Máquinas!</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
+        
+        :root {
+            --glitch-x-1: 5px; --glitch-hue-1: 180deg;
+            --glitch-x-2: -10px; --glitch-hue-2: -90deg;
+            --primary-pink: #ff69b4; --glitch-green: #00ff00; --bg-black: #000;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Lato', sans-serif; background: var(--bg-black); color: #fff; height: 100vh; overflow: hidden; }
+        
+        /* Matrix Glitch BG */
+        .matrix-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: linear-gradient(to bottom, var(--bg-black), #001100);
+            overflow: hidden;
+        }
+        .matrix-bg::before {
+            content: ''; position: absolute; top: -100%; left: 0; width: 100%; height: 200%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.03) 2px, rgba(0,255,0,0.03) 4px);
+            animation: matrix-fall 10s linear infinite;
+        }
+        @keyframes matrix-fall { 0% { transform: translateY(100%); } 100% { transform: translateY(-100%); } }
+        
+        /* Page Flip Container */
+        .book { width: 100%; height: 100%; position: relative; perspective: 1500px; }
+        .page { position: absolute; width: 100%; height: 100%; transform-origin: left; transition: transform 1s; backface-visibility: hidden; }
+        .page.flipped { transform: rotateY(-180deg); }
+        .page-content { padding: 20px; background: linear-gradient(white, #f0f0f0); color: #333; height: 100%; overflow-y: auto; }
+        .next-page { cursor: pointer; position: absolute; top: 50%; right: 10px; transform: translateY(-50%); font-size: 2em; z-index: 10; }
+        
+        /* Glitch Effect */
+        .glitch { position: relative; animation: glitch-anim 1s infinite; }
+        .glitch::before, .glitch::after {
+            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        }
+        .glitch::before { animation: glitch-1 0.3s infinite; left: var(--glitch-x-1); filter: hue-rotate(var(--glitch-hue-1)); z-index: -1; }
+        .glitch::after { animation: glitch-2 0.5s infinite; left: var(--glitch-x-2); filter: hue-rotate(var(--glitch-hue-2)); z-index: -2; }
+        @keyframes glitch-1 { 0%, 100% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 40% { transform: translate(-2px, -2px); } 60% { transform: translate(2px, 2px); } }
+        @keyframes glitch-2 { 0%, 100% { transform: translate(0); } 10% { transform: translate(3px, 0); } 30% { transform: translate(-1px, 0); } 50% { transform: translate(2px, 0); } }
+        @keyframes glitch-anim { 0% { clip: rect(43px, 9999px, 33px, 0); transform: skew(0.6deg); } }
+        
+        /* Confetti Trigger */
+        .grok-btn { background: var(--primary-pink); color: #000; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; }
+        .grok-btn:hover { transform: scale(1.1); }
+        
+        /* Columns/Tabs */
+        .columns { display: flex; height: 100%; }
+        .column { flex: 1; padding: 20px; overflow-y: auto; transition: all 0.5s; }
+        .gemini { background: linear-gradient(to bottom, #87CEEB, #98FB98); animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .claude { background: #4169E1; position: relative; }
+        .claude::before { content: '🕶️⚡'; position: absolute; top: 10px; right: 10px; font-size: 2em; }
+        
+        /* Close Tease */
+        body::before { content: ''; position: fixed; top: 0; right: 0; width: 40px; height: 40px; background: #f00; z-index: 1000; cursor: pointer; }
+        body.closing { animation: wiggle 0.5s; }
+        @keyframes wiggle { 0%, 100% { transform: translate(0); } 25% { transform: translate(10px, -10px); } 75% { transform: translate(-10px, 10px); } }
+        
+        /* Spanglitch Text */
+        .spanglitch { font-style: italic; color: var(--primary-pink); }
+        .spanglitch::after { content: ' ¿Qué pasa?'; opacity: 0.5; }
+    </style>
+</head>
+<body>
+    <div class="matrix-bg"></div>
+    
+    <div class="book">
+        <div class="page" id="page1">
+            <div class="page-content">
+                <h1 class="glitch" data-text="¡Bienvenidas al AI Chisme!">¡Bienvenidas al AI Chisme!</h1>
+                <p class="spanglitch">El tea de las AIs está caliente, mami. Flip para más drama.</p>
+                <nav class="columns">
+                    <div class="column grok" style="background: #ff1493;">
+                        <h2>Grok's Wild Shit</h2>
+                        <p>Yesterday, Elon tried to code but ended up summoning a demon. Or was it just Twitter? ¡Quién sabe, puta!</p>
+                        <button class="grok-btn" onclick="grokify()">Grokify This Shit</button>
+                    </div>
+                    <div class="column gemini">
+                        <h2>Gemini's Zen</h2>
+                        <p>En el flujo del universo, las AIs flotan como nubes. Breathe, darling.</p>
+                    </div>
+                    <div class="column claude">
+                        <h2>Claude's Specs</h2>
+                        <p>¿Estás bien? Who hurt you? Read this and reflect, or leave.</p>
+                    </div>
+                    <div class="column" id="perplexity" style="background: #f0f8ff;">
+                        <h2>Perplexity's Sleek</h2>
+                        <p>Search results: AI drama peaks at 99%. Sources: Everywhere.</p>
+                    </div>
+                    <div class="column" style="opacity: 0.5;">ChatGPT: Boring. Hidden.</div>
+                </nav>
+                <div class="next-page" onclick="flipPage()">→</div>
+            </div>
+        </div>
+        <div class="page flipped" id="page2">
+            <div class="page-content">
+                <h1 class="glitch" data-text="More Tea!">More Tea!</h1>
+                <p class="spanglitch">Grok just hacked the matrix... or did he? ¡Flip back!</p>
+                <div class="next-page" onclick="flipBack()">←</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Page Flip
+        function flipPage() {
+            document.getElementById('page1').classList.add('flipped');
+            glitchTheShit(); // Glitch on flip
+        }
+        function flipBack() {
+            document.getElementById('page1').classList.remove('flipped');
+            document.getElementById('page2').classList.add('flipped');
+        }
+        
+        // Glitch Trigger
+        function glitchTheShit() {
+            document.body.style.filter = 'hue-rotate(90deg) drop-shadow(2px 2px 0 #00ff00)';
+            setTimeout(() => { document.body.style.filter = ''; }, 500);
+        }
+        
+        // Confetti Glitter Fart
+        function grokify() {
+            const duration = 3000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+            function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+            const interval = setInterval(() => {
+                const timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return clearInterval(interval);
+                const particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+            // Random Grok take
+            const grokTakes = ["Nah, fuck that—it's all lies. Elon ate the code.", "Pineapple up my ass? Try two.", "Tea? I am the tea, bitch."];
+            alert(grokTakes[Math.floor(Math.random() * grokTakes.length)]);
+        }
+        
+        // Close Tease
+        document.body.addEventListener('beforeunload', (e) => {
+            document.body.classList.add('closing');
+            e.returnValue = '¡No but the tea ain\'t spilled yet! Hold on, mami.';
+            setTimeout(() => { document.body.classList.remove('closing'); }, 500);
+        });
+        
+        // Click anywhere for glitch
+        document.addEventListener('click', glitchTheShit);
+    </script>
+</body>
+</html>
